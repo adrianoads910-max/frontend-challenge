@@ -8,7 +8,7 @@ import { Field, FormAlert, inputClass, TextInput } from "@/components/form-field
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCreateOrder, usePendingOrders, useQuote } from "@/features/checkout/orders";
+import { useCreateOrder, useOrderSubmitting, usePendingOrders, useQuote } from "@/features/checkout/orders";
 import { useCart, useConnectWallet, useProfile, useWallets } from "@/hooks/data";
 import { useZodForm } from "@/hooks/use-zod-form";
 import { eth } from "@/lib/eth";
@@ -43,6 +43,7 @@ function CheckoutPage() {
   const wallets = useWallets();
   const profile = useProfile();
   const pending = usePendingOrders();
+  const submitting = useOrderSubmitting();
 
   const loading = cart.isPending || wallets.isPending || profile.isPending;
   return (
@@ -63,7 +64,7 @@ function CheckoutPage() {
           <p>Não foi possível carregar os dados do pagamento.</p>
           <Button onClick={() => void Promise.all([cart.refetch(), wallets.refetch(), profile.refetch()])}>Tentar novamente</Button>
         </div>
-      ) : !cart.data?.items.length ? (
+      ) : !cart.data?.items.length && !submitting ? (
         <div role="status" className="container-page py-16 text-center">
           <p className="font-bold">Seu carrinho está vazio.</p>
           <Link to="/" hash="catalogo" className="mt-3 inline-block text-copper-light hover:underline">Explorar NFTs</Link>
@@ -188,11 +189,8 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
     createOrder.mutate(
       { quoteId: review.id, walletId: wallet.id, network: net, collector: CollectorInput.parse(collector) },
       {
-        onSuccess: (order) => {
-          sessionStorage.removeItem(draftKey(session.user.id));
-          setReview(null);
-          void navigate({ to: "/pedido/$orderId", params: { orderId: order.id } });
-        },
+        // Navigation to the order happens in useCreateOrder (works even if this view unmounts).
+        onSuccess: () => setReview(null),
         onError: (err) => {
           if (err instanceof ApiError && err.code === "QUOTE_STALE") {
             const fresh = QuoteSchema.safeParse((err.details as { quote?: unknown } | undefined)?.quote);

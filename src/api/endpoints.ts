@@ -47,7 +47,8 @@ export const api = {
       request({ method: "POST", url: "/auth/register", data: input }, Session),
     login: (input: LoginInput) => request({ method: "POST", url: "/auth/login", data: input }, Session),
     session: (signal?: AbortSignal) => request({ url: "/auth/session", signal }, Session),
-    logout: () => request({ method: "POST", url: "/auth/logout" }, NoContent),
+    /** Takes the token explicitly: the local session is already cleared when this is sent. */
+    logout: (token: string) => request({ method: "POST", url: "/auth/logout", headers: { Authorization: `Bearer ${token}` } }, NoContent),
   },
   nfts: {
     list: (q: CatalogQuery, signal?: AbortSignal) => request({ url: "/nfts", params: catalogParams(q), signal }, CatalogPage),

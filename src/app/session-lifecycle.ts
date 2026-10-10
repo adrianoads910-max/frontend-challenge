@@ -44,13 +44,11 @@ export function setupSessionLifecycle(
       resetGuestCartId();
     },
     async signOut() {
-      try {
-        await api.auth.logout();
-      } catch {
-        /* the token is dropped locally regardless */
-      }
+      // Clear locally first: leaving the page right after "Sair" must never keep the user signed in.
+      const token = sessionStore.token();
       sessionStore.set(null);
       resetGuestCartId();
+      if (token) await api.auth.logout(token).catch(() => undefined);
     },
   };
 
@@ -80,7 +78,11 @@ export function setupSessionLifecycle(
   if (stored) {
     api.auth
       .session()
-      .then((fresh) => sessionStore.set(fresh))
+      // Ignore a late answer if the user signed out / switched account meanwhile: a stale
+      // response must never resurrect a session.
+      .then((fresh) => {
+        if (sessionStore.token() === stored.token) sessionStore.set(fresh);
+      })
       .catch(() => {
         /* a 401 is handled by onSessionExpired; network errors keep the optimistic session */
       });

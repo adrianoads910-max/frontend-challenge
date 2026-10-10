@@ -43,7 +43,11 @@ export function useZodForm<S extends z.ZodType<Values>>(schema: S, initial: z.in
     value: (values[name] ?? "") as string,
     error: errors[name],
     onChange: (e: { target: { value: string } }) => set(name, e.target.value as z.input<S>[K]),
-    onBlur: () => {
+    onBlur: (e?: { relatedTarget?: EventTarget | null }) => {
+      // Moving focus to this form's submit button: skip — submit validates everything anyway, and
+      // showing errors now would shift the layout under the pointer and swallow the click.
+      const nextFocus = e?.relatedTarget as HTMLElement | null | undefined;
+      if (nextFocus?.getAttribute("type") === "submit" && formRef.current?.contains(nextFocus)) return;
       const { next } = validate(values);
       setErrors((prev) => {
         const { [name]: _old, ...rest } = prev;

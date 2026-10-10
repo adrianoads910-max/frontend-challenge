@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { type RefObject, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,6 +19,7 @@ export function SiteHeader() {
   const session = useSession();
   const { data: cart } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
+  const searchButton = useRef<HTMLButtonElement>(null);
   const inMarket = MARKET_PATHS.some((p) => pathname.startsWith(p));
   const count = cart?.itemCount ?? 0;
 
@@ -42,7 +43,7 @@ export function SiteHeader() {
           <OutOfScopeLink label="Aprenda" className={navItem} />
         </nav>
         <div className="flex items-center gap-5">
-          <button type="button" onClick={() => setSearchOpen(true)} className="rounded-md p-1 hover:text-copper-light" aria-label="Buscar NFTs">
+          <button ref={searchButton} type="button" onClick={() => setSearchOpen(true)} className="rounded-md p-1 hover:text-copper-light" aria-label="Buscar NFTs">
             <Icon name="search" />
           </button>
           <Link to="/carrinho" className="relative rounded-md p-1 hover:text-copper-light" aria-label={`Carrinho, ${count} ${count === 1 ? "item" : "itens"}`}>
@@ -56,7 +57,7 @@ export function SiteHeader() {
           {session ? <AccountMenu /> : <SignInButton />}
         </div>
       </div>
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} returnFocus={searchButton} />
     </header>
   );
 }
@@ -101,12 +102,21 @@ function AccountMenu() {
   );
 }
 
-export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function SearchDialog({
+  open,
+  onOpenChange,
+  returnFocus,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Controlled dialogs have no Trigger: tell Base UI where focus goes back on close. */
+  returnFocus?: RefObject<HTMLElement | null>;
+}) {
   const navigate = useNavigate();
   const [value, setValue] = useState("");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent finalFocus={returnFocus ?? true}>
         <DialogHeader>
           <DialogTitle>Buscar NFTs</DialogTitle>
           <DialogDescription>Procure pelo nome da obra.</DialogDescription>

@@ -29,6 +29,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          fontFamily: "'Roboto Mono Variable', ui-monospace, monospace",
         } as React.CSSProperties
       }
       toastOptions={{

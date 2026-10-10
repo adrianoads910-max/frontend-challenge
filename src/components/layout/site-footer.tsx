@@ -30,7 +30,7 @@ function Newsletter() {
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-3" aria-labelledby="newsletter-title">
       <h2 id="newsletter-title" className="text-[17px] leading-4 font-bold">Antecipe-se ao próximo lançamento</h2>
       <div className="flex">
-        <label htmlFor="newsletter-email" className="sr-only">E-mail</label>
+        <label htmlFor="newsletter-email" className="sr-only">E-mail para receber lançamentos</label>
         <input
           id="newsletter-email"
           name="email"

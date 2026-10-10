@@ -63,7 +63,7 @@ export const http = axios.create({ baseURL: "/api", timeout: REQUEST_TIMEOUT_MS 
 
 http.interceptors.request.use((config) => {
   const token = sessionStore.token();
-  if (token) config.headers.set("Authorization", `Bearer ${token}`);
+  if (token && !config.headers.has("Authorization")) config.headers.set("Authorization", `Bearer ${token}`);
   config.headers.set("X-Cart-Id", guestCartId());
   return config;
 });

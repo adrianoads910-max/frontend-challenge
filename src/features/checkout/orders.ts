@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import type { CreateOrderInput, Network, Order } from "@/api/contracts";
 import { api, qk } from "@/api/endpoints";
 import { ApiError } from "@/lib/http";
@@ -40,9 +41,21 @@ export function useQuote() {
   return useMutation({ mutationFn: (network: Network) => api.checkout.quote(network) });
 }
 
+export const CREATE_ORDER_KEY = ["create-order"] as const;
+
+/** True while an order submission (including its automatic retries) is in flight. */
+export const useOrderSubmitting = () => useIsMutating({ mutationKey: CREATE_ORDER_KEY }) > 0;
+
+/**
+ * Success handling lives at hook level on purpose: if the order settles before the (slow) response
+ * arrives, the cart empties and the checkout UI may unmount — callbacks passed to mutate() would
+ * then be skipped and the buyer would never reach the receipt.
+ */
 export function useCreateOrder() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation({
+    mutationKey: CREATE_ORDER_KEY,
     mutationFn: async (input: CreateOrderInput): Promise<Order> => {
       const key = idempotencyKeyFor(input.quoteId);
       for (let attempt = 1; ; attempt++) {
@@ -60,6 +73,8 @@ export function useCreateOrder() {
       if (!userId) return;
       queryClient.setQueryData(qk.order(userId, order.id), order);
       void queryClient.invalidateQueries({ queryKey: qk.pendingOrders(userId) });
+      sessionStorage.removeItem(`kurio.checkout.draft.${userId}`);
+      void router.navigate({ to: "/pedido/$orderId", params: { orderId: order.id } });
     },
   });
 }

@@ -124,7 +124,7 @@ function ProfileEditor({ user }: { user: User }) {
 }
 
 /** "Nome ENS": fixed ".eth" suffix select + name input (layout of the Figma). */
-export function EnsField({ error, field }: { error?: string; field: { name: string; value: string; onChange: (e: { target: { value: string } }) => void; onBlur: () => void } }) {
+export function EnsField({ error, field }: { error?: string; field: { name: string; value: string; onChange: (e: { target: { value: string } }) => void; onBlur: (e?: { relatedTarget?: EventTarget | null }) => void } }) {
   return (
     <Field label="Nome ENS" required error={error}>
       {(a) => (
