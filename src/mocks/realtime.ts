@@ -72,7 +72,8 @@ export function blockConnections(ms: number): number {
 /** Server-side drop of every socket: socket.io-client reconnects on its own. */
 export function disconnectAll(): number {
   const count = clients.size;
-  for (const c of [...clients]) c.close();
+  // Deleting the current element while iterating a Set is safe in JS.
+  for (const c of clients) c.close();
   return count;
 }
 

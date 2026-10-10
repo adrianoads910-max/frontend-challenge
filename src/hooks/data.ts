@@ -144,8 +144,8 @@ export const useRemoveCartItem = () =>
       }),
   });
 export const useApplyCoupon = () => useCartMutation((code: string) => api.cart.applyCoupon(code));
-export const useRemoveCoupon = () => useCartMutation((_: void) => api.cart.removeCoupon());
-export const useAcknowledgePrices = () => useCartMutation((_: void) => api.cart.acknowledge());
+export const useRemoveCoupon = () => useCartMutation(() => api.cart.removeCoupon());
+export const useAcknowledgePrices = () => useCartMutation(() => api.cart.acknowledge());
 
 // ------------------------------------------------------------------ account
 
@@ -171,7 +171,7 @@ function useProfileMutation<V>(fn: (vars: V) => Promise<import("@/api/contracts"
 
 export const useUpdateProfile = () => useProfileMutation((input: ProfileInput) => api.profile.update(input));
 export const useSetAvatar = () => useProfileMutation((dataUrl: string) => api.profile.setAvatar(dataUrl));
-export const useRemoveAvatar = () => useProfileMutation((_: void) => api.profile.removeAvatar());
+export const useRemoveAvatar = () => useProfileMutation(() => api.profile.removeAvatar());
 export const useChangePassword = () => useMutation({ mutationFn: (input: PasswordChangeInput) => api.profile.changePassword(input) });
 
 export function useWallets() {

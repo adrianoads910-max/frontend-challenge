@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CatalogPage, CatalogQuery, Category, Network } from "@/api/contracts";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -112,8 +112,14 @@ function PriceFilter({ query, facets, onChange, idPrefix }: FiltersProps) {
     query.maxPrice ? toCenti(query.maxPrice) : max,
   ];
   const [range, setRange] = useState<[number, number]>(current);
-  // Keep the draft in sync when the URL changes (history navigation, reset).
-  useEffect(() => setRange(current()), [query.minPrice, query.maxPrice, min, max]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Keep the draft in sync when the URL or the bounds change (history navigation, reset),
+  // adjusting state during render rather than in an effect.
+  const syncKey = `${query.minPrice}|${query.maxPrice}|${min}|${max}`;
+  const [syncedKey, setSyncedKey] = useState(syncKey);
+  if (syncedKey !== syncKey) {
+    setSyncedKey(syncKey);
+    setRange(current());
+  }
 
   const apply = () => {
     const [lo, hi] = range;

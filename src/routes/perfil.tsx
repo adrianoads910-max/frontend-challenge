@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PasswordChangeInput, ProfileInput, type User } from "@/api/contracts";
@@ -86,7 +86,7 @@ function ProfileEditor({ user }: { user: User }) {
   });
 
   return (
-    <form ref={form.formRef} onSubmit={onSubmit} noValidate className="space-y-8">
+    <form ref={form.ref} onSubmit={onSubmit} noValidate className="space-y-8">
       <FormAlert message={form.formError} />
       <div className="grid gap-x-7 gap-y-6 md:grid-cols-2">
         <Field label="Nome de exibição" required error={form.errors.displayName}>
@@ -158,7 +158,6 @@ function AvatarEditor({ user }: { user: User }) {
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const busy = setAvatar.isPending || removeAvatar.isPending;
-  useEffect(() => setError(null), [user.avatarUrl]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -183,6 +182,7 @@ function AvatarEditor({ user }: { user: User }) {
             e.target.value = "";
             if (!file) return;
             try {
+              setError(null);
               const dataUrl = await toAvatarDataUrl(file);
               await setAvatar.mutateAsync(dataUrl);
               toast.success("Avatar atualizado");

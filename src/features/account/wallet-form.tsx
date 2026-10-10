@@ -71,7 +71,7 @@ export function WalletForm({
   );
 
   return (
-    <form ref={form.formRef} onSubmit={submit} noValidate className="space-y-6" id={`${idPrefix}-form`}>
+    <form ref={form.ref} onSubmit={submit} noValidate className="space-y-6" id={`${idPrefix}-form`}>
       <FormAlert message={form.formError} />
       <div className="grid gap-x-7 gap-y-5 md:grid-cols-2">
         <Field label="Nome de exibição" required error={form.errors.displayName}>

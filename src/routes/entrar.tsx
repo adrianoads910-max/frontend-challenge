@@ -55,7 +55,7 @@ function LoginPage() {
           Sua sessão expirou. Entre novamente para continuar de onde parou.
         </p>
       )}
-      <form ref={form.formRef} onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+      <form ref={form.ref} onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
         <FormAlert message={form.formError} />
         <Field label="E-mail" error={form.errors.email} hideLabel>
           {(a) => <TextInput {...a} {...form.field("email")} type="email" autoComplete="email" placeholder="contato@email.com" />}

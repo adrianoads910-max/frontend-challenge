@@ -44,7 +44,7 @@ function RegisterPage() {
   return (
     <AuthPanel mode="register" redirect={back}>
       <h2 className="mb-6 text-center text-lg font-bold">Criar perfil de colecionador</h2>
-      <form ref={form.formRef} onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
+      <form ref={form.ref} onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
         <FormAlert message={form.formError} />
         <Field label="Nome de usuário" error={form.errors.username} hint="Letras minúsculas, números e _" hideLabel>
           {(a) => <TextInput {...a} {...form.field("username")} autoComplete="username" placeholder="Nome de usuário" />}

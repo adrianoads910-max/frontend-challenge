@@ -198,7 +198,7 @@ export const WalletInput = z
         message: v.network === "solana" ? "Endereço Solana inválido" : "Endereço 0x inválido (40 hexadecimais)",
       });
     }
-    if (v.secondaryAddress && !/\.eth$/.test(v.secondaryAddress) && !isValidAddress(v.network, v.secondaryAddress)) {
+    if (v.secondaryAddress && !v.secondaryAddress.endsWith(".eth") && !isValidAddress(v.network, v.secondaryAddress)) {
       ctx.addIssue({ code: "custom", path: ["secondaryAddress"], message: "Informe um nome .eth ou um endereço válido" });
     }
   });

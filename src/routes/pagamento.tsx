@@ -232,7 +232,7 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
   const summary = review ?? cart;
   return (
     <div className="container-page grid gap-10 lg:grid-cols-[minmax(0,763px)_405px] lg:justify-between">
-      <form ref={form.formRef} onSubmit={openReview} noValidate aria-labelledby="collector-title" className="space-y-6">
+      <form ref={form.ref} onSubmit={openReview} noValidate aria-labelledby="collector-title" className="space-y-6">
         <h2 id="collector-title" className="text-lg font-bold">Perfil do colecionador</h2>
         <FormAlert message={form.formError} />
         <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
@@ -337,7 +337,7 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
 
         <Button
           type="button"
-          onClick={() => form.formRef.current?.requestSubmit()}
+          onClick={() => form.submit()}
           disabled={quote.isPending || blockedByPending}
           className="h-11 w-full rounded-sm text-[15px] font-bold"
         >

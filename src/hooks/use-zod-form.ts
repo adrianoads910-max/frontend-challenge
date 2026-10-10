@@ -80,5 +80,8 @@ export function useZodForm<S extends z.ZodType<Values>>(schema: S, initial: z.in
     await onValid(result.data as z.output<S>);
   };
 
-  return { values, set, field, errors, setErrors, formError, setFormError, applyApiError, handleSubmit, formRef, reset: setValues };
+  /** Programmatic submit (e.g. a button rendered outside the <form>). */
+  const submit = () => formRef.current?.requestSubmit();
+
+  return { values, set, field, errors, setErrors, formError, setFormError, applyApiError, handleSubmit, ref: formRef, submit, reset: setValues };
 }

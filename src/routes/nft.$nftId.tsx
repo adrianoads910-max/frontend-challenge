@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { Heart, Search, ShoppingCart, Star } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { Edition, Nft } from "@/api/contracts";
 import { Icon } from "@/components/icon";
@@ -63,22 +63,20 @@ function NftDetail({ nft }: { nft: Nft }) {
   const [editionId, setEditionId] = useState(() => defaultEdition(nft)?.id ?? nft.editions[0]!.id);
   const edition = nft.editions.find((e) => e.id === editionId)!;
   const limit = Math.min(edition.available, edition.maxPerOrder);
-  const [quantity, setQuantity] = useState(1);
+  const [requestedQuantity, setQuantity] = useState(1);
+  // Always within the current edition limits (edition switch or realtime stock change).
+  const quantity = Math.max(1, Math.min(requestedQuantity, Math.max(limit, 1)));
   const [image, setImage] = useState(0);
   const [zoom, setZoom] = useState(false);
   const addToCart = useAddToCart();
   const [formError, setFormError] = useState<string | null>(null);
   const qtyId = useId();
 
-  // Keep quantity within the current edition limits (edition switch or realtime stock change).
-  useEffect(() => {
-    setQuantity((q) => Math.max(1, Math.min(q, Math.max(limit, 1))));
-  }, [limit]);
-
-  // Realtime: flag a price change that happened while the page is open.
-  const seenPrice = useRef<{ editionId: string; price: string }>({ editionId, price: edition.price });
-  if (seenPrice.current.editionId !== editionId) seenPrice.current = { editionId, price: edition.price };
-  const priceChanged = !eth.eq(seenPrice.current.price, edition.price);
+  // Realtime: flag a price change that happened while the page is open (reset on edition switch,
+  // using React's "adjust state while rendering" pattern instead of an effect).
+  const [seenPrice, setSeenPrice] = useState({ editionId, price: edition.price });
+  if (seenPrice.editionId !== editionId) setSeenPrice({ editionId, price: edition.price });
+  const priceChanged = seenPrice.editionId === editionId && !eth.eq(seenPrice.price, edition.price);
 
   const buy = (goToCart: boolean) => {
     setFormError(null);
