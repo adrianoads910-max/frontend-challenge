@@ -5,9 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:no-mocks": "VITE_ENABLE_MOCKS=false vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc -b",
+    "lint": "oxlint src e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "test:visual:update": "playwright test e2e/visual.spec.ts --update-snapshots",
+    "lighthouse": "bun scripts/lighthouse.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

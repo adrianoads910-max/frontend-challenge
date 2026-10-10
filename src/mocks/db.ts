@@ -218,7 +218,7 @@ export class MockDb {
     return user;
   }
 
-  async register(input: { displayName: string; username: string; email: string; password: string }) {
+  async register(input: { username: string; email: string; password: string }) {
     const email = input.email.toLowerCase();
     const fields: Record<string, string> = {};
     if (this.state.users.some((u) => u.email === email)) fields.email = "Este e-mail já está cadastrado";
@@ -228,7 +228,7 @@ export class MockDb {
     }
     const salt = id("salt");
     const user: StoredUser = {
-      id: id("user"), displayName: input.displayName, username: input.username, email,
+      id: id("user"), displayName: input.username, username: input.username, email,
       ensName: null, walletNickname: null, avatarUrl: null, createdAt: now().toISOString(),
       salt, passwordHash: await hashPassword(input.password, salt),
     };

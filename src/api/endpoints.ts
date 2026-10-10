@@ -43,7 +43,7 @@ export function catalogParams(q: CatalogQuery): URLSearchParams {
 
 export const api = {
   auth: {
-    register: (input: Omit<RegisterInput, "acceptTerms">) =>
+    register: (input: RegisterInput) =>
       request({ method: "POST", url: "/auth/register", data: input }, Session),
     login: (input: LoginInput) => request({ method: "POST", url: "/auth/login", data: input }, Session),
     session: (signal?: AbortSignal) => request({ url: "/auth/session", signal }, Session),

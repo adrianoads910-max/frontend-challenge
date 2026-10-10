@@ -26,3 +26,6 @@ dist-ssr
 # local secrets
 .figma_token
 .env.local
+test-results/
+playwright-report/
+lighthouse/tmp/

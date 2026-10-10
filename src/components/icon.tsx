@@ -19,7 +19,7 @@ export type IconName =
   | "activity" | "arrow-down" | "arrow-down-2" | "arrow-left-2" | "arrow-right" | "arrow-right-2" | "close"
   | "close-small" | "danger-triangle" | "delete" | "download" | "filter" | "hide" | "home" | "image-2"
   | "linkedin" | "location" | "logout" | "message" | "search" | "shop" | "star" | "twitter" | "user"
-  | "user-mobile" | "wallet";
+  | "user-mobile" | "wallet" | "thank-you";
 
 export function Icon({ name, size, className, label }: { name: IconName; size?: number; className?: string; label?: string }) {
   const svg = ICONS[name];

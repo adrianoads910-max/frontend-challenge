@@ -102,17 +102,23 @@ export const LoginInput = z.object({
 });
 export type LoginInput = z.infer<typeof LoginInput>;
 
+/** Request body of POST /auth/register. */
 export const RegisterInput = z.object({
-  displayName: z.string().trim().min(2, "Mínimo de 2 caracteres").max(60),
   username: z
     .string()
     .trim()
     .regex(/^[a-z0-9_]{3,24}$/, "3 a 24 caracteres: letras minúsculas, números e _"),
   email: z.email("E-mail inválido"),
   password,
-  acceptTerms: z.literal(true, "Aceite os termos para continuar"),
 });
 export type RegisterInput = z.infer<typeof RegisterInput>;
+
+/** Registration form (adds the confirmation field of the layout). */
+export const RegisterForm = RegisterInput.extend({ confirmPassword: z.string() }).refine((v) => v.password === v.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "As senhas não coincidem",
+});
+export type RegisterForm = z.infer<typeof RegisterForm>;
 
 export const ProfileInput = z.object({
   displayName: z.string().trim().min(2, "Mínimo de 2 caracteres").max(60),
