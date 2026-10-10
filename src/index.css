@@ -159,3 +159,15 @@
     padding-inline: 0;
   }
 }
+
+/* Browser autofill keeps the dark theme (Chrome paints a light background by default). */
+@layer base {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--cream);
+    caret-color: var(--cream);
+    box-shadow: 0 0 0 1000px var(--surface-card) inset;
+    transition: background-color 9999s ease-out;
+  }
+}

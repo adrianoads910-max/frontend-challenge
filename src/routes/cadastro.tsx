@@ -47,7 +47,7 @@ function RegisterPage() {
       <form ref={form.ref} onSubmit={onSubmit} noValidate className="flex flex-col gap-3">
         <FormAlert message={form.formError} />
         <Field label="Nome de usuário" error={form.errors.username} hint="Letras minúsculas, números e _" hideLabel>
-          {(a) => <TextInput {...a} {...form.field("username")} autoComplete="username" placeholder="Nome de usuário" />}
+          {(a) => <TextInput {...a} {...form.field("username")} onChange={(e) => form.set("username", e.target.value.toLowerCase())} autoCapitalize="none" spellCheck={false} autoComplete="username" placeholder="Nome de usuário" />}
         </Field>
         <Field label="E-mail" error={form.errors.email} hideLabel>
           {(a) => <TextInput {...a} {...form.field("email")} type="email" autoComplete="email" placeholder="Digite seu e-mail" />}

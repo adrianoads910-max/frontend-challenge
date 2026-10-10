@@ -240,7 +240,7 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
             {(a) => <TextInput {...a} {...form.field("displayName")} autoComplete="name" />}
           </Field>
           <Field label="Nome de usuário" required error={form.errors.username}>
-            {(a) => <TextInput {...a} {...form.field("username")} autoComplete="username" />}
+            {(a) => <TextInput {...a} {...form.field("username")} onChange={(e) => form.set("username", e.target.value.toLowerCase())} autoCapitalize="none" spellCheck={false} autoComplete="username" />}
           </Field>
           <Field label="Rede" required error={form.errors.network}>
             {(a) => (

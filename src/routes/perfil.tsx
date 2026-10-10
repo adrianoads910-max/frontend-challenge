@@ -93,7 +93,7 @@ function ProfileEditor({ user }: { user: User }) {
           {(a) => <TextInput {...a} {...form.field("displayName")} autoComplete="name" />}
         </Field>
         <Field label="Nome de usuário" required error={form.errors.username}>
-          {(a) => <TextInput {...a} {...form.field("username")} autoComplete="username" />}
+          {(a) => <TextInput {...a} {...form.field("username")} onChange={(e) => form.set("username", e.target.value.toLowerCase())} autoCapitalize="none" spellCheck={false} autoComplete="username" />}
         </Field>
         <Field label="E-mail" required error={form.errors.email}>
           {(a) => <TextInput {...a} {...form.field("email")} type="email" autoComplete="email" />}

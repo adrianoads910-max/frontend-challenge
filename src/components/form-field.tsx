@@ -23,7 +23,9 @@ interface FieldProps {
 
 export function Field({ label, required, error, hint, className, hideLabel, children }: FieldProps) {
   const id = useId();
-  const describedBy = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean).join(" ") || undefined;
+  // The hint is replaced by the error while there is one (they usually state the same rule).
+  const showHint = Boolean(hint) && !error;
+  const describedBy = [error ? `${id}-error` : null, showHint ? `${id}-hint` : null].filter(Boolean).join(" ") || undefined;
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <label htmlFor={id} className={cn("text-[15px]", hideLabel && "sr-only")}>
@@ -36,7 +38,7 @@ export function Field({ label, required, error, hint, className, hideLabel, chil
         {required && <span className="sr-only"> (obrigatório)</span>}
       </label>
       {children({ id, "aria-invalid": Boolean(error), "aria-describedby": describedBy, "aria-required": required || undefined })}
-      {hint && (
+      {showHint && (
         <p id={`${id}-hint`} className="text-xs text-sand">
           {hint}
         </p>
