@@ -25,8 +25,14 @@ export function NftCard({ nft, priority = false, className }: { nft: NftSummary;
         {nft.soldOut && (
           <span className="absolute top-4 left-4 rounded-sm bg-ink/90 px-2 py-1 text-xs font-bold text-cream">Esgotado</span>
         )}
-        <FavoriteButton nftId={nft.id} name={nft.name} className="absolute top-4 right-4" />
       </div>
+      {/* Outside the transformed wrapper: a transform creates a stacking context that would let the
+          card's stretched link cover the button on hover. */}
+      <FavoriteButton
+        nftId={nft.id}
+        name={nft.name}
+        className="absolute top-4 right-4 z-20 transition-transform duration-200 group-hover:-translate-y-1"
+      />
       <div className="flex flex-col gap-1.5 px-0.5">
         <h3 id={`nft-${nft.id}-name`} className="text-[15px] leading-4">
           {/* Stretched link: the whole card is clickable, the heart stays a separate control. */}

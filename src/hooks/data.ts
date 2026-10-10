@@ -99,7 +99,14 @@ export function useCart() {
   });
 }
 
-function useCartMutation<V>(fn: (vars: V) => Promise<Cart>, opts: { optimistic?: (cart: Cart, vars: V) => Cart } = {}) {
+/*
+ * Feedback for mutations whose component may unmount (optimistic removal) lives here, at hook
+ * level: callbacks passed to mutate() are skipped by TanStack Query once the caller unmounted.
+ */
+function useCartMutation<V>(
+  fn: (vars: V) => Promise<Cart>,
+  opts: { optimistic?: (cart: Cart, vars: V) => Cart; onSuccess?: (vars: V) => void; onError?: (error: unknown, vars: V) => void } = {},
+) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: fn,
@@ -111,11 +118,15 @@ function useCartMutation<V>(fn: (vars: V) => Promise<Cart>, opts: { optimistic?:
       if (previous) queryClient.setQueryData(key, opts.optimistic(previous, vars));
       return { key, previous };
     },
-    onError: (_error, _vars, ctx) => {
+    onError: (error, vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(ctx.key, ctx.previous);
       void queryClient.invalidateQueries({ queryKey: qk.cartAll });
+      opts.onError?.(error, vars);
     },
-    onSuccess: (cart, _vars, ctx) => queryClient.setQueryData(ctx.key, cart),
+    onSuccess: (cart, vars, ctx) => {
+      queryClient.setQueryData(ctx.key, cart);
+      opts.onSuccess?.(vars);
+    },
   });
 }
 
@@ -123,9 +134,14 @@ export const useAddToCart = () => useCartMutation((input: AddToCartInput) => api
 export const useUpdateCartItem = () =>
   useCartMutation(({ itemId, quantity }: { itemId: string; quantity: number }) => api.cart.update(itemId, quantity));
 export const useRemoveCartItem = () =>
-  useCartMutation((itemId: string) => api.cart.remove(itemId), {
+  useCartMutation(({ itemId }: { itemId: string; name: string }) => api.cart.remove(itemId), {
     // Optimistic removal: the line disappears at once; totals are replaced by the server response.
-    optimistic: (cart, itemId) => ({ ...cart, items: cart.items.filter((i) => i.id !== itemId) }),
+    optimistic: (cart, { itemId }) => ({ ...cart, items: cart.items.filter((i) => i.id !== itemId) }),
+    onSuccess: ({ name }) => toast.success(`${name} removido do carrinho`),
+    onError: (error, { name }) =>
+      toast.error(`Não foi possível remover ${name}. O item voltou ao carrinho.`, {
+        description: error instanceof ApiError ? error.message : undefined,
+      }),
   });
 export const useApplyCoupon = () => useCartMutation((code: string) => api.cart.applyCoupon(code));
 export const useRemoveCoupon = () => useCartMutation((_: void) => api.cart.removeCoupon());

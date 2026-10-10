@@ -167,7 +167,7 @@ function CatalogResults({ catalog }: { catalog: ReturnType<typeof useCatalog> })
   return (
     <div className="relative" aria-busy={isPlaceholderData}>
       <p className="sr-only" role="status">{isPlaceholderData ? "Atualizando resultados…" : `${data.total} NFTs encontrados`}</p>
-      <ul className={cn("grid grid-cols-2 gap-x-4 gap-y-8 transition-opacity md:grid-cols-3 lg:gap-x-[26px]", isPlaceholderData && "opacity-60")}>
+      <ul aria-label="Resultados" aria-busy={isPlaceholderData} className={cn("grid grid-cols-2 gap-x-4 gap-y-8 transition-opacity md:grid-cols-3 lg:gap-x-[26px]", isPlaceholderData && "opacity-60")}>
         {data.items.map((nft, i) => (
           <li key={nft.id}>
             <NftCard nft={nft} priority={i < 3} />

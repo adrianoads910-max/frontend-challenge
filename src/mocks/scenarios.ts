@@ -41,8 +41,18 @@ export function isScenario(value: unknown): value is ScenarioId {
   return typeof value === "string" && value in SCENARIOS;
 }
 
+/** One-shot failure injected by tests/control panel: the next `remaining` matching requests fail. */
+export interface FailRule {
+  method?: string;
+  pattern: string;
+  status: number;
+  code: string;
+  remaining: number;
+}
+
 export class ScenarioState {
   current: ScenarioId = "default";
+  failRules: FailRule[] = [];
   private rand = mulberry32(1);
   private apiCalls = 0;
   private catalogCalls = 0;
@@ -64,6 +74,15 @@ export class ScenarioState {
     this.apiCalls = 0;
     this.catalogCalls = 0;
     this.timedOutKeys.clear();
+    this.failRules = [];
+  }
+
+  /** Returns (and consumes) the injected failure for this request, if any. */
+  takeFailure(method: string, path: string): FailRule | null {
+    const rule = this.failRules.find((r) => r.remaining > 0 && (!r.method || r.method === method) && new RegExp(r.pattern).test(path));
+    if (!rule) return null;
+    rule.remaining -= 1;
+    return rule;
   }
 
   /** Latency for the next API request, in ms. */

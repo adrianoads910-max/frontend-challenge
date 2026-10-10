@@ -128,11 +128,7 @@ function useItemActions(item: CartItem) {
       { itemId: item.id, quantity },
       { onError: (err) => toast.error(err instanceof ApiError ? err.message : "Não foi possível alterar a quantidade.") },
     );
-  const removeItem = () =>
-    remove.mutate(item.id, {
-      onSuccess: () => toast.success(`${item.name} removido do carrinho`),
-      onError: (err) => toast.error(`Não foi possível remover ${item.name}.`, { description: err instanceof ApiError ? err.message : undefined }),
-    });
+  const removeItem = () => remove.mutate({ itemId: item.id, name: item.name });
   return { setQuantity, removeItem, busy: update.isPending || remove.isPending };
 }
 

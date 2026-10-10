@@ -65,6 +65,11 @@ function route<P extends PathParams = PathParams>(
   return async ({ request, params }: { request: Request; params: P }) => {
     await delay(scenario.latency(Boolean(opts.catalog)));
     if (scenario.current === "offline") return HttpResponse.error();
+    const injected = scenario.takeFailure(request.method, new URL(request.url).pathname);
+    if (injected) {
+      if (injected.status === 0) return HttpResponse.error();
+      return errorResponse(new ApiError(injected.status, injected.code as ApiError["code"], `Falha simulada (${injected.code})`));
+    }
     if (scenario.shouldFailTransiently()) {
       return errorResponse(new ApiError(503, "TRANSIENT", "Serviço temporariamente indisponível. Tente novamente."));
     }

@@ -39,6 +39,18 @@ export const controlHandlers = [
     const nft = db.mutateNft(params.id, change);
     return ok({ version: nft.version });
   }),
+  /** { pattern, method?, status, code, count } — status 0 simulates a network error. */
+  http.post("/__mock/fail-next", async ({ request }) => {
+    const rule = (await request.json()) as { pattern: string; method?: string; status?: number; code?: string; count?: number };
+    scenario.failRules.push({
+      pattern: rule.pattern,
+      method: rule.method,
+      status: rule.status ?? 503,
+      code: rule.code ?? "TRANSIENT",
+      remaining: rule.count ?? 1,
+    });
+    return ok();
+  }),
   http.post("/__mock/sessions/expire", () => {
     db.expireSessions();
     return ok();
