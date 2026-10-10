@@ -33,7 +33,8 @@ function RootLayout() {
         Pular para o conteúdo
       </a>
       <SiteHeader />
-      <main id="conteudo" tabIndex={-1} className="outline-none">
+      {/* min-height: the footer starts below the fold, so content growing after load never shifts it (CLS). */}
+      <main id="conteudo" tabIndex={-1} className="min-h-dvh outline-none">
         <Outlet />
       </main>
       <SiteFooter />

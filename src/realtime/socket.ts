@@ -1,5 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { io, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import {
   type CatalogPage,
   type Nft,
@@ -9,6 +9,7 @@ import {
 } from "@/api/contracts";
 import { qk } from "@/api/endpoints";
 import { eth } from "@/lib/eth";
+import { mocksReady } from "@/lib/mocks-ready";
 import { sessionStore } from "@/lib/session";
 
 /*
@@ -54,9 +55,23 @@ export class RealtimeClient {
     for (const l of this.listeners) l(notice);
   }
 
-  /** (Re)connects with the identity of the current session. */
+  private generation = 0;
+
+  /**
+   * (Re)connects with the identity of the current session. socket.io-client is loaded lazily,
+   * after the mock backend is active (see lib/mocks-ready.ts).
+   */
   connect(token: string | null) {
     this.disconnect();
+    const generation = ++this.generation;
+    void Promise.all([mocksReady, import("socket.io-client")]).then(([, { io }]) => {
+      // A newer connect()/disconnect() happened meanwhile (fast logout/login): drop this one.
+      if (generation !== this.generation) return;
+      this.open(io, token);
+    });
+  }
+
+  private open(io: typeof import("socket.io-client").io, token: string | null) {
     const socket = io(window.location.origin, {
       path: "/socket.io",
       transports: ["websocket"],
@@ -82,6 +97,7 @@ export class RealtimeClient {
 
   /** Removes every listener and closes the transport. Also clears per-session event state. */
   disconnect() {
+    this.generation++;
     if (this.socket) {
       this.socket.removeAllListeners();
       this.socket.io.removeAllListeners();

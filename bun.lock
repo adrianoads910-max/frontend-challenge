@@ -30,6 +30,7 @@
         "@types/react": "^19.2.18",
         "@types/react-dom": "^19.2.7",
         "@vitejs/plugin-react": "^6.1.1",
+        "chrome-launcher": "^1.2.2",
         "lighthouse": "^13.5.0",
         "msw": "^2.10.2",
         "oxlint": "^1.81.0",

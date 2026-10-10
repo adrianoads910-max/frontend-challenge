@@ -34,7 +34,7 @@ export function Hero() {
           >
             EXPLORAR <Icon name="arrow-right" size={14} className="md:hidden" />
           </Link>
-          <div className="col-span-2 mt-3 flex justify-center gap-2 md:mt-0 md:justify-end md:pr-16" role="group" aria-label="Escolher destaque">
+          <div className="col-span-2 mt-2 flex justify-center md:mt-0 md:justify-end md:pr-16" role="group" aria-label="Escolher destaque">
             {SLIDES.map((s, i) => (
               <button
                 key={s.nftId}
@@ -42,8 +42,11 @@ export function Hero() {
                 aria-label={`Destaque ${i + 1} de ${SLIDES.length}: ${s.name}`}
                 aria-current={i === index}
                 onClick={() => setIndex(i)}
-                className={cn("size-2.5 rounded-full transition-colors", i === index ? "bg-copper" : "bg-copper/40 hover:bg-copper/70")}
-              />
+                // 24×24 hit area (WCAG target size) around the 10px dot of the layout.
+                className="group/dot grid size-6 place-items-center rounded-full"
+              >
+                <span className={cn("size-2.5 rounded-full transition-colors", i === index ? "bg-copper" : "bg-copper/40 group-hover/dot:bg-copper/70")} />
+              </button>
             ))}
           </div>
         </div>

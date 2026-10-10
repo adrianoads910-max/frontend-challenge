@@ -1,15 +1,12 @@
 import "./index.css";
+import { markMocksReady } from "./lib/mocks-ready";
 
-/**
- * Boot order matters: the mock backend must be running before the app module graph is evaluated,
- * because engine.io (socket.io-client) captures the WebSocket constructor at import time. With a
- * static import it would bypass MSW's WebSocket interception.
- */
 async function boot() {
   if (import.meta.env.VITE_ENABLE_MOCKS !== "false") {
     const { startMockBackend } = await import("./mocks/browser");
-    await startMockBackend();
+    await startMockBackend().catch((err) => console.error("[mocks] failed to start", err));
   }
+  markMocksReady();
   const { mountApp } = await import("./app/mount");
   mountApp(document.getElementById("root")!);
 }

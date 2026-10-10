@@ -8,7 +8,7 @@ import { mulberry32 } from "./fixtures";
  */
 
 export const SCENARIOS = {
-  default: { label: "Padrão", description: "Latência realista (120–450 ms), tudo funcionando." },
+  default: { label: "Padrão", description: "Latência realista (60–180 ms), tudo funcionando." },
   slow: { label: "Rede lenta", description: "Todas as respostas levam 1,5–3 s (skeletons, feedback de carregamento)." },
   "out-of-order": {
     label: "Respostas fora de ordem",
@@ -89,7 +89,7 @@ export class ScenarioState {
   latency(isCatalog: boolean): number {
     if (this.current === "slow") return 1500 + Math.floor(this.rand() * 1500);
     if (this.current === "out-of-order" && isCatalog) return this.catalogCalls++ % 2 === 0 ? 1800 : 200;
-    return 120 + Math.floor(this.rand() * 330);
+    return 60 + Math.floor(this.rand() * 120);
   }
 
   /** Deterministic transient failure: every 3rd API call in the "flaky" scenario. */

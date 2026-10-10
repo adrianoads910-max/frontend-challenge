@@ -1,4 +1,6 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { qk } from "@/api/endpoints";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -97,6 +99,7 @@ type Connection = { status: "idle" } | { status: "connecting" } | { status: "con
 
 function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wallet[]; blockedByPending: boolean }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const session = useSession()!;
   const cart = useCart().data!;
   const primary = wallets.find((w) => w.role === "primary") ?? wallets[0]!;
@@ -139,8 +142,9 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
 
   const network = Network.safeParse(form.values.network).success ? (form.values.network as Network) : wallet.network;
 
-  // Realtime: if the cart changes while reviewing (nft.updated → cart refetch), the quote is stale.
-  const reviewStale = review !== null && cart.version !== review.cartVersion;
+  // Realtime: if the cart changed AFTER the quote (nft.updated → cart refetch), the quote is stale.
+  // Directional on purpose: a fresh quote from the server can be newer than our cached cart.
+  const reviewStale = review !== null && cart.version > review.cartVersion;
 
   const doConnect = () => {
     setConnection({ status: "connecting" });
@@ -179,6 +183,12 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
       setReview(fresh);
     } catch (err) {
       setReview(null);
+      if (err instanceof ApiError && (err.code === "OUT_OF_STOCK" || err.code === "EDITION_UNAVAILABLE")) {
+        // Same outcome as a refused confirmation: the cart shows which line to fix.
+        toast.error(err.message, { description: "Ajuste o carrinho para continuar." });
+        void navigate({ to: "/carrinho" });
+        return;
+      }
       toast.error(err instanceof ApiError ? err.message : "Não foi possível atualizar a cotação.");
     }
   };
@@ -195,7 +205,12 @@ function Checkout({ user, wallets, blockedByPending }: { user: User; wallets: Wa
           if (err instanceof ApiError && err.code === "QUOTE_STALE") {
             const fresh = QuoteSchema.safeParse((err.details as { quote?: unknown } | undefined)?.quote);
             if (fresh.success) {
-              setStaleNotice(`Os valores mudaram: o total passou de ${eth.format(review.total)} ETH para ${eth.format(fresh.data.total)} ETH. Revise e confirme novamente.`);
+              void queryClient.invalidateQueries({ queryKey: qk.cartAll });
+              setStaleNotice(
+                eth.eq(review.total, fresh.data.total)
+                  ? "A cotação expirou ou foi atualizada. Revise os valores e confirme novamente."
+                  : `Os valores mudaram: o total passou de ${eth.format(review.total)} ETH para ${eth.format(fresh.data.total)} ETH. Revise e confirme novamente.`,
+              );
               setReview(fresh.data);
               return;
             }

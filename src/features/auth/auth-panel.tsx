@@ -12,7 +12,7 @@ export function AuthPanel({ mode, redirect, children }: { mode: "login" | "regis
   const navigate = useNavigate();
   return (
     <div className="grid min-h-[calc(100dvh-68px)] place-items-start justify-center px-4 py-10 md:place-items-center md:bg-[radial-gradient(ellipse_at_top,#2f1d15_0%,#140d0a_60%)]">
-      <section aria-labelledby="auth-title" className="relative w-full max-w-[500px] md:rounded-sm md:border-b-[10px] md:border-copper md:bg-surface-card md:pb-14 md:shadow-card">
+      <section aria-labelledby="auth-title" className="relative w-full max-w-[500px] md:w-[500px] md:rounded-sm md:border-b-[10px] md:border-copper md:bg-surface-card md:pb-14 md:shadow-card">
         <button
           type="button"
           onClick={() => void navigate({ to: redirect ?? "/" })}

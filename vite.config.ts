@@ -11,6 +11,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // MSW's cookie store needs only getDomain(); see src/mocks/shims/tldts.ts.
+      tldts: fileURLToPath(new URL("./src/mocks/shims/tldts.ts", import.meta.url)),
+    },
+  },
   build: { target: "es2022", sourcemap: true },
 });

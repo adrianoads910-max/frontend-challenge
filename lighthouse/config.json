@@ -1,0 +1,13 @@
+{
+  "$comment": "Lighthouse audit configuration (versioned). Run with: bun run lighthouse",
+  "baseUrl": "http://localhost:4173",
+  "pages": [
+    { "name": "inicio", "path": "/" },
+    { "name": "detalhe", "path": "/nft/nft-042-0" }
+  ],
+  "profiles": ["mobile", "desktop"],
+  "runs": 3,
+  "categories": ["performance", "accessibility", "best-practices", "seo"],
+  "targets": { "performance": 90, "accessibility": 95, "best-practices": 95, "seo": 90 },
+  "chromeFlags": ["--headless=new", "--no-sandbox", "--disable-gpu"]
+}

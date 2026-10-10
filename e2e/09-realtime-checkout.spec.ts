@@ -45,8 +45,8 @@ test.describe("9. alteração de preço/disponibilidade via Socket.IO durante o 
     await page.getByRole("button", { name: "Conectar e finalizar" }).click();
     await page.getByRole("button", { name: "Conectar carteira" }).click();
     await expect(page.getByText(/Conectada na Ethereum/)).toBeVisible();
-    // Socket deliberately NOT awaited / dropped: the server must still refuse the stale quote.
-    await mock(page, "socket/disconnect");
+    // Realtime outage: the client cannot learn about the change, the server must refuse the quote.
+    await mock(page, "socket/block", { ms: 30_000 });
     await page.getByRole("button", { name: "Confirmar compra" }).click();
     const dialog = page.getByRole("dialog", { name: "Revise sua compra" });
     await expect(dialog).toBeVisible();
@@ -68,7 +68,9 @@ test.describe("9. alteração de preço/disponibilidade via Socket.IO durante o 
     const dialog = page.getByRole("dialog", { name: "Revise sua compra" });
     await expect(dialog).toBeVisible();
     await mock(page, "nfts/nft-042-0/mutate", { editionId: "nft-042-0-e50", available: 0 });
-    await dialog.getByRole("button", { name: /Confirmar e pagar|Atualizar cotação/ }).first().click();
+    // Realtime flags the review as stale; refreshing the quote reports the sold-out edition.
+    await expect(dialog.getByRole("button", { name: "Confirmar e pagar" })).toBeDisabled();
+    await dialog.getByRole("button", { name: "Atualizar cotação" }).click();
     await expect(page).toHaveURL(/\/carrinho$/, { timeout: 10_000 });
     await expect(page.getByText(/Esgotado — remova para continuar/).locator("visible=true").first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Conectar e finalizar" })).toBeDisabled();

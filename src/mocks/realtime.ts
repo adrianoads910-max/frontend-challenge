@@ -25,6 +25,8 @@ interface Client {
 }
 
 const clients = new Set<Client>();
+/** While set, new Socket.IO connections are refused (realtime outage scenario). */
+let blockedUntil = 0;
 
 function canReceive(client: Client, event: Event) {
   return event.type === "nft.updated" || event.resource.ownerId === client.userId;
@@ -43,6 +45,10 @@ export const realtimeHandlers = [
       connection.server.connect();
       return;
     }
+    if (Date.now() < blockedUntil) {
+      connection.client.close();
+      return;
+    }
     const token = url.searchParams.get("token");
     const io = toSocketIo(connection);
     const client: Client = {
@@ -56,6 +62,12 @@ export const realtimeHandlers = [
 ];
 
 // ------------------------------------------------------------------ failure injection (control panel / tests)
+
+/** Refuses (and drops) Socket.IO connections for `ms` milliseconds. */
+export function blockConnections(ms: number): number {
+  blockedUntil = Date.now() + ms;
+  return disconnectAll();
+}
 
 /** Server-side drop of every socket: socket.io-client reconnects on its own. */
 export function disconnectAll(): number {

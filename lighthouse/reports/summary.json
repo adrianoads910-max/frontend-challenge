@@ -1,0 +1,76 @@
+{
+  "environment": {
+    "date": "2026-10-10T23:41:22.131Z",
+    "lighthouse": "13.5.0",
+    "chrome": "Chrome/148.0.0.0",
+    "node": "v24.3.0",
+    "bun": "1.3.13",
+    "os": "Linux 7.0.0-38-generic (x64)",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12450H",
+    "runsPerPage": 3,
+    "conditions": "vite preview (optimized build), default mock scenario, fresh Chrome profile per run, Lighthouse default throttling (mobile: simulated slow 4G + 4x CPU; desktop: desktop preset)"
+  },
+  "summary": [
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "median": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 2912,
+      "fcpMs": 1707,
+      "cls": 0,
+      "tbtMs": 92
+    }
+  ],
+  "runs": [
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "run": 1,
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": 2934.1140250000003,
+      "cls": 0,
+      "tbt": 97.5,
+      "fcp": 1707.484475
+    },
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "run": 2,
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": 2888.8123750000004,
+      "cls": 0,
+      "tbt": 92,
+      "fcp": 1682.745125
+    },
+    {
+      "page": "inicio",
+      "profile": "mobile",
+      "run": 3,
+      "scores": {
+        "performance": 94,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcp": 2912.2614750000002,
+      "cls": 0,
+      "tbt": 77,
+      "fcp": 1706.9100250000001
+    }
+  ]
+}

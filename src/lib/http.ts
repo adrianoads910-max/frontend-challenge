@@ -1,5 +1,6 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import { ApiErrorBody, type ErrorCode } from "@/api/contracts";
+import { mocksReady } from "./mocks-ready";
 import { sessionStore } from "./session";
 
 /*
@@ -61,7 +62,8 @@ export const onSessionExpired = (l: ExpiryListener) => {
 
 export const http = axios.create({ baseURL: "/api", timeout: REQUEST_TIMEOUT_MS });
 
-http.interceptors.request.use((config) => {
+http.interceptors.request.use(async (config) => {
+  await mocksReady;
   const token = sessionStore.token();
   if (token && !config.headers.has("Authorization")) config.headers.set("Authorization", `Bearer ${token}`);
   config.headers.set("X-Cart-Id", guestCartId());

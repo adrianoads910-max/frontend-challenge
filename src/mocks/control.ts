@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { db } from "./db";
-import { connectedClients, disconnectAll, replayLastEvent, sendStaleNftEvent } from "./realtime";
+import { blockConnections, connectedClients, disconnectAll, replayLastEvent, sendStaleNftEvent } from "./realtime";
 import { isScenario, SCENARIOS, scenario } from "./scenarios";
 
 /*
@@ -56,6 +56,11 @@ export const controlHandlers = [
     return ok();
   }),
   http.post("/__mock/socket/disconnect", () => ok({ closed: disconnectAll() })),
+  /** { ms } — realtime outage: drop sockets and refuse reconnections for `ms`. */
+  http.post("/__mock/socket/block", async ({ request }) => {
+    const { ms } = (await request.json()) as { ms?: number };
+    return ok({ closed: blockConnections(typeof ms === "number" ? ms : 10_000) });
+  }),
   http.post("/__mock/events/duplicate", () => ok({ event: replayLastEvent() })),
   http.post("/__mock/events/stale", () => ok({ event: sendStaleNftEvent() })),
   http.post<{ id: string }>("/__mock/orders/:id/settle", async ({ params, request }) => {
