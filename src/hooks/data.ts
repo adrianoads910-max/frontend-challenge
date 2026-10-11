@@ -73,7 +73,18 @@ export function useToggleFavorite() {
       return { key, previous };
     },
     onError: (error, vars, ctx) => {
-      if (ctx) queryClient.setQueryData(ctx.key, ctx.previous);
+      if (ctx) {
+        // If the list had not loaded yet there is no snapshot: undo exactly our own change
+        // (setQueryData(undefined) would be a no-op and leave the optimistic state behind).
+        queryClient.setQueryData<Favorites>(ctx.key, (current) => {
+          if (ctx.previous) return ctx.previous;
+          const ids = new Set(current?.nftIds ?? []);
+          if (vars.favorite) ids.delete(vars.nftId);
+          else ids.add(vars.nftId);
+          return { nftIds: [...ids] };
+        });
+        void queryClient.invalidateQueries({ queryKey: ctx.key });
+      }
       toast.error(`Não foi possível ${vars.favorite ? "favoritar" : "remover dos favoritos"}${vars.name ? ` ${vars.name}` : ""}.`, {
         description: error instanceof ApiError ? error.message : undefined,
       });
