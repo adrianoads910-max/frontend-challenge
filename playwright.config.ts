@@ -6,6 +6,8 @@ import { defineConfig, devices } from "@playwright/test";
  * i.e. an isolated, deterministic backend state.
  */
 const PORT = Number(process.env.E2E_PORT ?? 4173);
+/** E2E_BASE_URL runs the suite against an already deployed build (no local server). */
+const REMOTE = process.env.E2E_BASE_URL;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -18,7 +20,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
   snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}",
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: REMOTE ?? `http://localhost:${PORT}`,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     locale: "pt-BR",
@@ -29,7 +31,9 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
     { name: "mobile", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } } },
   ],
-  webServer: {
+  webServer: REMOTE
+    ? undefined
+    : {
     command: `bunx vite build && bunx vite preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,

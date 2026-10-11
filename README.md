@@ -4,7 +4,7 @@ Solução do desafio frontend da Jungle Gaming (enunciado em [`docs/CHALLENGE.md
 React 19 + TypeScript, TanStack Router/Query, Axios, Socket.IO, Tailwind CSS 4, shadcn/ui (Base UI),
 MSW (REST + Socket.IO), Playwright e Lighthouse.
 
-URL pública: (a definir no deploy)
+URL pública: **https://frontend-challenge-eight-red.vercel.app**
 
 | Documento | Conteúdo |
 | --- | --- |
@@ -187,6 +187,8 @@ Pré-condição comum para os fluxos de compra: entrar como `ana@kurio.dev` / `K
 Resultado atual: **116 testes passando** a partir de um checkout limpo (14 pulados de propósito: teclado
 e varredura de larguras rodam só no projeto desktop, que controla o viewport explicitamente).
 Para rodar com a porta 4173 ocupada (por exemplo, com um `preview` aberto): `E2E_PORT=4180 bun run test:e2e`.
+Para rodar contra o deploy publicado (sem servidor local):
+`E2E_BASE_URL=https://frontend-challenge-eight-red.vercel.app bun run test:e2e`.
 
 Os testes controlam o backend apenas pelo plano de controle `/__mock` (via `fetch` da própria página →
 Service Worker): troca de cenário, mutação de NFTs, falhas injetadas, atraso de liquidação de pedidos,
@@ -205,4 +207,4 @@ Relatórios HTML/JSON e resumo de medianas em `lighthouse/reports/`. Resultados 
 Alvo: Vercel (preset Vite, comando `bun run build`, saída `dist/`). Os mocks ficam ativos no build
 publicado (`VITE_ENABLE_MOCKS=true` no `.env` versionado), incluindo o tempo real.
 
-URL pública: (a definir no deploy)
+URL pública: **https://frontend-challenge-eight-red.vercel.app**
