@@ -253,6 +253,8 @@ Referências dos frames e assets em [`docs/figma/README.md`](docs/figma/README.m
 | O coração de favorito não era clicável no hover: o `transform` do card criava um contexto de empilhamento e o link esticado cobria o botão | Ajuste de camadas do card. |
 | O diálogo de busca controlado não devolvia o foco ao gatilho | `finalFocus` do Base UI configurado. |
 | O feedback da remoção otimista do carrinho nunca aparecia (callbacks de `mutate()` são descartados quando a linha desmonta) | Feedback movido para o hook. |
+| Após um `QUOTE_STALE` do servidor, a revisão ficava travada: a detecção de cotação desatualizada comparava versões com `!==`, e a cotação nova (mais recente que o carrinho em cache) parecia desatualizada | Comparação direcional (`carrinho > cotação`) e cache do carrinho invalidado na recusa. |
+| Rollback de favorito falhava de forma intermitente (2/10, achado repetindo o teste num checkout limpo): clicando antes de `GET /me/favorites` responder, não havia snapshot e `setQueryData(undefined)` não desfazia nada | Sem snapshot, a própria alteração é desfeita e o cache ressincronizado. |
 
 ## Limitações conhecidas
 

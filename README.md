@@ -180,6 +180,13 @@ Pré-condição comum para os fluxos de compra: entrar como `ana@kurio.dev` / `K
 | 10 | Eventos duplicados/antigos, desconexão, pedido pendente | `e2e/10-realtime-resilience.spec.ts` |
 | 11 | Teclado, foco de diálogos, validação | `e2e/11-accessibility.spec.ts` (desktop) |
 | 12 | Skeletons, falha e nova tentativa | `e2e/12-loading-errors.spec.ts` |
+| — | Cenários sensíveis a tempo com **relógio controlado** (`page.clock`): expiração de sessão no checkout com retomada, liquidação do pedido, validade da cotação | `e2e/13-clock.spec.ts` |
+| — | Todas as telas em 390 / 768 / 1440 px e zoom de 200% sem overflow horizontal | `e2e/responsive.spec.ts` (desktop) |
+| — | Regressão visual | `e2e/visual.spec.ts` |
+
+Resultado atual: **116 testes passando** a partir de um checkout limpo (14 pulados de propósito: teclado
+e varredura de larguras rodam só no projeto desktop, que controla o viewport explicitamente).
+Para rodar com a porta 4173 ocupada (por exemplo, com um `preview` aberto): `E2E_PORT=4180 bun run test:e2e`.
 
 Os testes controlam o backend apenas pelo plano de controle `/__mock` (via `fetch` da própria página →
 Service Worker): troca de cenário, mutação de NFTs, falhas injetadas, atraso de liquidação de pedidos,
