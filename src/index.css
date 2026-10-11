@@ -171,3 +171,25 @@
     transition: background-color 9999s ease-out;
   }
 }
+
+/* Native <select> popups: Chrome draws the option list with the OS colours (white) while the
+   option text inherits the theme's cream colour → unreadable. Theme the list explicitly. */
+@layer base {
+  select {
+    color-scheme: dark;
+    background-color: var(--ink);
+    color: var(--cream);
+  }
+  select option,
+  select optgroup {
+    background-color: var(--surface-card);
+    color: var(--cream);
+  }
+  select option:checked {
+    background-color: var(--surface-raised);
+    color: var(--copper-light);
+  }
+  select option:disabled {
+    color: var(--khaki);
+  }
+}
