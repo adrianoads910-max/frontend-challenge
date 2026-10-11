@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
  * that is deployed. Every test gets a fresh browser context (empty storage + fresh Service Worker),
  * i.e. an isolated, deterministic backend state.
  */
-const PORT = 4173;
+const PORT = Number(process.env.E2E_PORT ?? 4173);
 
 export default defineConfig({
   testDir: "./e2e",
